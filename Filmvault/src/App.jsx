@@ -8,27 +8,11 @@ import Home from './components/Home';
 import Banner from './components/Banner';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import MovieDetails from './components/MovieDetails';
 
 function App() {
   const [watchList, setWatchList] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to manage login status
-
-  const handleAddToWatchList = (movieObj) => {
-    const newWatchList = [...watchList, movieObj];
-    localStorage.setItem('Filmvault', JSON.stringify(newWatchList));
-    setWatchList(newWatchList);
-  };
-
-  const handleRemoveFromWatchlist = (movieObj) => {
-    const index = watchList.findIndex(movie => movie.id === movieObj.id);
-    
-    if (index !== -1) {
-      const updatedWatchList = [...watchList];
-      updatedWatchList.splice(index, 1);
-      setWatchList(updatedWatchList);
-      localStorage.setItem('Filmvault', JSON.stringify(updatedWatchList));
-    }
-  };
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const moviesFromLocalStorage = localStorage.getItem('Filmvault');
@@ -37,37 +21,66 @@ function App() {
     }
   }, []);
 
-  // Private route component
+  const handleAddToWatchList = (movieObj) => {
+    const newWatchList = [...watchList, movieObj];
+    localStorage.setItem('Filmvault', JSON.stringify(newWatchList));
+    setWatchList(newWatchList);
+  };
+
+  const handleRemoveFromWatchlist = (movieObj) => {
+    const updatedWatchList = watchList.filter(movie => movie.id !== movieObj.id);
+    localStorage.setItem('Filmvault', JSON.stringify(updatedWatchList));
+    setWatchList(updatedWatchList);
+  };
+
   const PrivateRoute = ({ children }) => {
-    return isLoggedIn ? children : <Navigate to="/" />;
+    return isLoggedIn ? children : <Navigate to="/LoginPage" />;
   };
 
   return (
     <BrowserRouter>
-      {/* Conditionally render NavBar based on login status */}
       {isLoggedIn && <NavBar />}
       <Routes>
         <Route path="/" element={<Navigate to="/LoginPage" />} />
         <Route path="/LoginPage" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />
-        
-        {/* Protecting routes */}
+
         <Route path="/Movies" element={
           <PrivateRoute>
             <>
               <Banner />
-              <Movies handleAddToWatchList={handleAddToWatchList} handleRemoveFromWatchlist={handleRemoveFromWatchlist} watchList={watchList} />
+              <Movies
+                handleAddToWatchList={handleAddToWatchList}
+                handleRemoveFromWatchlist={handleRemoveFromWatchlist}
+                watchList={watchList}
+              />
             </>
           </PrivateRoute>
         } />
+
         <Route path="/Watchlist" element={
           <PrivateRoute>
-            <Watchlist watchList={watchList} setWatchList={setWatchList} handleRemoveFromWatchList={handleRemoveFromWatchlist} />
+            <Watchlist
+              watchList={watchList}
+              setWatchList={setWatchList}
+              handleRemoveFromWatchList={handleRemoveFromWatchlist}
+            />
           </PrivateRoute>
         } />
+
         <Route path="/Home" element={
           <PrivateRoute>
             <Home />
+          </PrivateRoute>
+        } />
+
+        <Route path="/moviedetails/:id" element={
+          <PrivateRoute>
+            <MovieDetails
+              watchList={watchList}
+              handleAddToWatchList={handleAddToWatchList}
+              handleRemoveFromWatchlist={handleRemoveFromWatchlist}
+            />
           </PrivateRoute>
         } />
       </Routes>
