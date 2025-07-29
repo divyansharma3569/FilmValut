@@ -8,84 +8,6 @@ import Home from './components/Home';
 import Banner from './components/Banner';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
-<<<<<<< HEAD
-import MovieDetails from './components/MovieDetails';
-
-function App() {
-  const [watchList, setWatchList] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const moviesFromLocalStorage = localStorage.getItem('Filmvault');
-    if (moviesFromLocalStorage) {
-      setWatchList(JSON.parse(moviesFromLocalStorage));
-    }
-  }, []);
-
-  const handleAddToWatchList = (movieObj) => {
-    const newWatchList = [...watchList, movieObj];
-    localStorage.setItem('Filmvault', JSON.stringify(newWatchList));
-    setWatchList(newWatchList);
-  };
-
-  const handleRemoveFromWatchlist = (movieObj) => {
-    const updatedWatchList = watchList.filter(movie => movie.id !== movieObj.id);
-    localStorage.setItem('Filmvault', JSON.stringify(updatedWatchList));
-    setWatchList(updatedWatchList);
-  };
-
-  const PrivateRoute = ({ children }) => {
-    return isLoggedIn ? children : <Navigate to="/LoginPage" />;
-  };
-
-  return (
-    <BrowserRouter>
-      {isLoggedIn && <NavBar />}
-      <Routes>
-        <Route path="/" element={<Navigate to="/LoginPage" />} />
-        <Route path="/LoginPage" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/RegisterPage" element={<RegisterPage />} />
-
-        <Route path="/Movies" element={
-          <PrivateRoute>
-            <>
-              <Banner />
-              <Movies
-                handleAddToWatchList={handleAddToWatchList}
-                handleRemoveFromWatchlist={handleRemoveFromWatchlist}
-                watchList={watchList}
-              />
-            </>
-          </PrivateRoute>
-        } />
-
-        <Route path="/Watchlist" element={
-          <PrivateRoute>
-            <Watchlist
-              watchList={watchList}
-              setWatchList={setWatchList}
-              handleRemoveFromWatchList={handleRemoveFromWatchlist}
-            />
-          </PrivateRoute>
-        } />
-
-        <Route path="/Home" element={
-          <PrivateRoute>
-            <Home />
-          </PrivateRoute>
-        } />
-
-        <Route path="/moviedetails/:id" element={
-          <PrivateRoute>
-            <MovieDetails
-              watchList={watchList}
-              handleAddToWatchList={handleAddToWatchList}
-              handleRemoveFromWatchlist={handleRemoveFromWatchlist}
-            />
-          </PrivateRoute>
-        } />
-      </Routes>
-=======
 import ChangePassword from './components/ChangePassword';
 import axios from 'axios';
 
@@ -93,14 +15,10 @@ function AppWrapper() {
   return (
     <BrowserRouter>
       <App />
->>>>>>> 975c35e (Resolved merge conflicts)
     </BrowserRouter>
   );
 }
 
-<<<<<<< HEAD
-export default App;
-=======
 function App() {
   const [watchList, setWatchList] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
@@ -218,4 +136,3 @@ function App() {
 }
 
 export default AppWrapper;
->>>>>>> 975c35e (Resolved merge conflicts)

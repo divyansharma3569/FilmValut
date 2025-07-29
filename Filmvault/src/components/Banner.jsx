@@ -1,100 +1,111 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
+import React, {useState, useEffect} from 'react'
 function Banner() {
-  const [slides, setSlides] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const navigate = useNavigate();
-
-  const TMDB_API_KEY = 'd570ed2297fd08d032fcd10e72e36d79';
-
-  const fetchMovies = async () => {
-    try {
-      const response = await axios.get(
-        `https://api.themoviedb.org/3/trending/movie/day?api_key=${TMDB_API_KEY}`
-      );
-      const movies = response.data.results;
-
-      // Pick 5 random movies from the list
-      const shuffled = [...movies].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, 5);
-
-      // Map to objects with ID and banner info
-      const bannerData = selected.map(movie => ({
-        id: movie.id,
-        url: `https://image.tmdb.org/t/p/original${movie.backdrop_path}`,
-        title: movie.title || movie.name,
-        overview: movie.overview
-      }));
-
-      setSlides(bannerData);
-    } catch (error) {
-      console.error("Failed to fetch banner movies", error);
+  const slides = [
+    {
+      url: 'https://bloody-disgusting.com/wp-content/uploads/2013/02/2-the-conjuring-banner.jpg'
+    },
+    {
+      url: 'https://coldfeet-space.nyc3.cdn.digitaloceanspaces.com/wsb/2017/09/it-banner-2.png'
+    },
+    {
+      url: 'https://movizark.files.wordpress.com/2018/09/banner.jpg?w=676&h=171'
+    },
+    {
+      url: 'https://codmwstore.com/wp-content/uploads/2024/10/Tracer-Pack-Smile-2-Bundle-Banner.webp'
+    },
+    {
+      url: 'https://assets-in.bmscdn.com/discovery-catalog/events/et00024545-djdejadylx-landscape.jpg'
     }
-  };
+  ];
 
-  useEffect(() => {
-    fetchMovies();
-  }, []);
-
+  const [currentIndex, setCurrentIndex] = useState(0)
   const prevSlide = () => {
-    const isFirstSlide = currentIndex === 0;
+    const isFirstSlide = currentIndex ===0;
     const newIndex = isFirstSlide ? slides.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const nextSlide = () => {
-    const isLastSlide = currentIndex === slides.length - 1;
-    const newIndex = isLastSlide ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [currentIndex, slides.length]);
-
-  if (slides.length === 0) {
-    return <div className="text-white text-xl text-center mt-10">Loading banners...</div>;
+    setCurrentIndex(newIndex); 
   }
+  
+  const nextSlide = () => {
+    const isLastSlide = currentIndex === slides.length-1;
+    const newIndex = isLastSlide ? 0 : currentIndex+1;
+    setCurrentIndex(newIndex); 
+  } 
+
+  useEffect(() => { // <-- Added useEffect for automatic slide change
+    const interval = setInterval(() => {
+        nextSlide();
+    }, 4000); // Change the slide every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
+}, [currentIndex]);
 
   return (
-    <div className='h-[75vh] w-[1425px] rounded-3xl m-auto relative group overflow-hidden'>
-      <div
-        onClick={() => navigate(`/moviedetails/${slides[currentIndex].id}`)}
-        style={{ backgroundImage: `url(${slides[currentIndex].url})` }}
-        className='w-full h-full rounded-2xl bg-center bg-cover duration-500 cursor-pointer'
-      >
-        <div className="bg-black/50 w-full h-full flex flex-col justify-end p-10 rounded-2xl">
-          <h2 className="text-3xl text-white font-bold mb-2">
-            {slides[currentIndex].title}
-          </h2>
-          <p className="text-white text-sm max-w-2xl">
-            {slides[currentIndex].overview}
-          </p>
-        </div>
-      </div>
 
-      {/* Left Arrow */}
-      <div
-        className='hidden group-hover:block absolute top-[45%] left-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer'
-        onClick={prevSlide}
-      >
-        <i className="fa-solid fa-backward"></i>
-      </div>
+  <div className='h-[75vh] w-[1425px] rounded-3xl m-auto border bg-centre bg-cover bg-no-repeat group'>
+    <div style={{backgroundImage: `url(${slides[currentIndex].url})`}} className='w-full h-full rounded-2xl bg-center bg-cover duration-500'></div>
+  
+  {/* for left arrow */}
+  <div className='hidden group-hover:block absolute top-[45%] -translate-x-10 ml-20 translate-y-[-50%] left-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer'>
+  <i onClick={prevSlide} class="fa-solid fa-backward"></i>
+  </div>
 
-      {/* Right Arrow */}
-      <div
-        className='hidden group-hover:block absolute top-[45%] right-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer'
-        onClick={nextSlide}
-      >
-        <i className="fa-solid fa-forward"></i>
-      </div>
-    </div>
-  );
-}
+  {/* for right arrow */}
+  <div className='hidden group-hover:block absolute top-[45%] -translate-x-10 translate-y-[-50%] right-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer'>
+  <i onClick={nextSlide} class="fa-solid fa-forward"></i>
+  </div>
+  </div>
+    )
+  }
+  
+  export default Banner
 
-export default Banner;
+
+  // return (
+
+  //   <div>
+  //     <div className='h-[75vh] w-[1425px] rounded-3xl m-auto border bg-centre bg-cover bg-no-repeat flex items-end'
+  //      style={{backgroundImage: `url(https://bloody-disgusting.com/wp-content/uploads/2013/02/2-the-conjuring-banner.jpg)`}}>
+  //          <div className='h-[7vh] w-full rounded-b-3xl border font-bold  font-mono text-white text-xl p-3 text-center bg-slate-800/70'>
+  //            Conjuring
+  //          </div>
+  //     </div>
+
+  //     <div className='h-[75vh] w-[1425px] rounded-3xl m-auto border bg-centre bg-cover bg-no-repeat flex items-end'
+  //      style={{backgroundImage: `url(https://coldfeet-space.nyc3.cdn.digitaloceanspaces.com/wsb/2017/09/it-banner-2.png)`}}>
+  //          <div className='h-[7vh] w-full rounded-b-3xl border font-bold  font-mono text-white text-xl p-3 text-center bg-slate-800/70'>
+  //            IT
+  //          </div>
+  //     </div>
+
+  //     <div className='h-[75vh] w-[1425px] rounded-3xl m-auto border bg-centre bg-cover bg-no-repeat flex items-end'
+  //      style={{backgroundImage: `url(https://movizark.files.wordpress.com/2018/09/banner.jpg?w=676&h=171)`}}>
+  //          <div className='h-[7vh] w-full rounded-b-3xl border font-bold  font-mono text-white text-xl p-3 text-center bg-slate-800/70'>
+  //            The Nun
+  //          </div>
+  //     </div>
+
+  //     <div className='h-[75vh] w-[1425px] rounded-3xl m-auto border bg-centre bg-cover bg-no-repeat flex items-end'
+  //      style={{backgroundImage: `url(https://assets-in.bmscdn.com/discovery-catalog/events/et00024545-djdejadylx-landscape.jpg)`}}>
+  //          <div className='h-[7vh] w-full rounded-b-3xl border font-bold  font-mono text-white text-xl p-3 text-center bg-slate-800/70'>
+  //            Annabella
+  //          </div>
+  //     </div>
+
+  //     <div className='h-[75vh] w-[1425px] rounded-3xl m-auto border bg-centre bg-cover bg-no-repeat flex items-end'
+  //      style={{backgroundImage: `url(https://codmwstore.com/wp-content/uploads/2024/10/Tracer-Pack-Smile-2-Bundle-Banner.webp)`}}>
+  //          <div className='h-[7vh] w-full rounded-b-3xl border font-bold  font-mono text-white text-xl p-3 text-center bg-slate-800/70'>
+  //            Smile 2
+  //          </div>
+  //     </div>
+      
+  //   </div>
+  // )
+
+
+//conjuring - https://bloody-disgusting.com/wp-content/uploads/2013/02/2-the-conjuring-banner.jpg
+//it - https://coldfeet-space.nyc3.cdn.digitaloceanspaces.com/wsb/2017/09/it-banner-2.png
+//the nun - https://movizark.files.wordpress.com/2018/09/banner.jpg?w=676&h=171
+//smile 2 - https://codmwstore.com/wp-content/uploads/2024/10/Tracer-Pack-Smile-2-Bundle-Banner.webp
+//annabel - https://assets-in.bmscdn.com/discovery-catalog/events/et00024545-djdejadylx-landscape.jpg
+//Titanic - https://static1.squarespace.com/static/5ba3d1efa09a7e572c0e3bf0/t/5ba460dd542c0ec8ec286bc8/1465489907147/1000w/TitanicBanner.jpg
+//harry potter - https://cdn.europosters.eu/image/hp/80594.jpg
